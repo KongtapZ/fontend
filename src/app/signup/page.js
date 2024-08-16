@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import '@/app/'
 export default function Page() {
 
   const [firstname, setFirstName] = useState('');
@@ -24,7 +23,7 @@ export default function Page() {
   };
 
   return (
-    <>
+    <> 
     <br /><br /><br />
     <div className="container">
     <div class="card">
