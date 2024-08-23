@@ -1,38 +1,55 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Navbar from '@/app/component/navbar';
 
 export default function Page({ params }) {
   const { id } = params;
-
   const [items, setItems] = useState([]);
   const [firstname, setFirstName] = useState('');
   const [lastname, setLastName] = useState('');
   const [username, setUserName] = useState('');
   const [password, setPassWord] = useState('');
+  const [isCheckingToken, setIsCheckingToken] = useState(true); // ใช้ในการตรวจสอบ token
+  const router = useRouter(); // ใช้สำหรับทำการ redirect
 
+  // ตรวจสอบ token เพื่อป้องกันไม่ให้เข้าถึงหน้านี้ก่อนเข้าสู่ระบบ
   useEffect(() => {
-    async function getUsers() {
-      try {
-        const res = await fetch(`http://localhost:3000/api/users/${id}`);
-        if (!res.ok) {
-          console.error('Failed to fetch data');
-          return;
-        }
-        const data = await res.json();
-        setItems(data);
-        if (data.length > 0) {
-          setFirstName(data[0].firstname);
-          setLastName(data[0].lastname);
-          setUserName(data[0].username);
-          setPassWord(data[0].password);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
+    const token = localStorage.getItem('token'); // หรือใช้ sessionStorage
 
-    getUsers();
-  }, [id]); // Add `id` as a dependency
+    if (!token) {
+      router.push('/login'); // หากไม่มี token จะ redirect ไปที่หน้า login
+    } else {
+      setIsCheckingToken(false); // หยุดการตรวจสอบเมื่อเจอ token
+    }
+  }, [router]);
+
+  // ดึงข้อมูลผู้ใช้เมื่อการตรวจสอบ token เสร็จสมบูรณ์
+  useEffect(() => {
+    if (!isCheckingToken) { // ทำงานดึงข้อมูลเมื่อการตรวจสอบ token เสร็จสมบูรณ์
+      async function getUsers() {
+        try {
+          const res = await fetch(`http://localhost:3000/api/users/${id}`);
+          if (!res.ok) {
+            console.error('Failed to fetch data');
+            return;
+          }
+          const data = await res.json();
+          setItems(data);
+          if (data.length > 0) {
+            setFirstName(data[0].firstname);
+            setLastName(data[0].lastname);
+            setUserName(data[0].username);
+            setPassWord(data[0].password);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+
+      getUsers();
+    }
+  }, [isCheckingToken, id]);
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
@@ -40,6 +57,7 @@ export default function Page({ params }) {
     const res = await fetch('http://localhost:3000/api/users', {
       method: 'PUT',
       headers: {
+        'Content-Type': 'application/json',
         Accept: 'application/json',
       },
       body: JSON.stringify({ id, firstname, lastname, username, password }),
@@ -49,8 +67,14 @@ export default function Page({ params }) {
     console.log(result);
   };
 
+  // ไม่แสดงเนื้อหาจนกว่าจะตรวจสอบ token เสร็จ
+  if (isCheckingToken) {
+    return null; // หรือคุณอาจจะแสดง loading spinner ที่นี่
+  }
+
   return (
     <>
+      <Navbar />
       <br /><br /><br />
       <div className="container">
         <div className="card">

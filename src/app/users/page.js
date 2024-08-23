@@ -1,29 +1,46 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Navbar from '@/app/component/navbar';
 
 export default function Page() {
   const [items, setItems] = useState([]);
+  const [isCheckingToken, setIsCheckingToken] = useState(true); // ใช้ในการตรวจสอบ token
+  const router = useRouter(); // ใช้สำหรับทำการ redirect
+
+  // ตรวจสอบ token ก่อนเข้าถึงหน้านี้
+  useEffect(() => {
+    const token = localStorage.getItem('token'); // หรือใช้ sessionStorage
+
+    if (!token) {
+      router.push('/login'); // หากไม่มี token จะ redirect ไปที่หน้า login
+    } else {
+      setIsCheckingToken(false); // หยุดการตรวจสอบเมื่อเจอ token
+    }
+  }, [router]); // จะทำงานเมื่อ component ถูก mount
 
   useEffect(() => {
-    async function getUsers() {
-      try {
-        const res = await fetch('http://localhost:3000/api/users');
-        if (!res.ok) {
-          console.error('Failed to fetch data');
-          return;
+    if (!isCheckingToken) { // ทำงานดึงข้อมูลเมื่อการตรวจสอบ token เสร็จสมบูรณ์
+      async function getUsers() {
+        try {
+          const res = await fetch('http://localhost:3000/api/users');
+          if (!res.ok) {
+            console.error('Failed to fetch data');
+            return;
+          }
+          const data = await res.json();
+          setItems(data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
         }
-        const data = await res.json();
-        setItems(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
       }
+
+      getUsers();
+      const interval = setInterval(getUsers, 1000);
+      return () => clearInterval(interval);
     }
- 
-    getUsers();
-    const interval = setInterval(getUsers, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [isCheckingToken]);
 
   const deleteUser = async (id) => {
     try {
@@ -42,10 +59,16 @@ export default function Page() {
     }
   };
 
+  if (isCheckingToken) {
+    return null; // ไม่แสดงอะไรจนกว่าจะตรวจสอบ token เสร็จ
+  }
+
   return (
     <>
+      <Navbar />
       <br /><br /><br /><br />
-      <div className="container">
+      <div className="container mb-1">
+      <Link href='add' className="btn btn-success px-3 mb-3 ">Add</Link>
         <div className="card">
           <div className="card-header">
             Users List

@@ -45,7 +45,7 @@ export default function SignUp() {
       <div className="container">
         <div className="card">
           <div className="card-header bg-success text-white">
-            SignUp Form
+            Add Form
           </div>
           <div className="card-body">
             <form className="row g-3" onSubmit={handleSubmit}>
