@@ -32,7 +32,7 @@ export default function SignUp() {
       localStorage.setItem('token', result.token); // สมมติว่าคุณได้รับ token จาก server หลัง signup
 
       // redirect ไปยังหน้าอื่น
-      router.push('/users');
+      router.push('/login');
     } else {
       console.log('Signup failed:', result);
     }
