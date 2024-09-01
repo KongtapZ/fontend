@@ -25,7 +25,7 @@ export default function Page({ params }) {
   }, [id]);
 
   const deleteUser = async () => {
-    const res = await fetch(`http://localhost:3000/api/users/${id}`, {
+    const res = await fetch(`https://backend024.vercel.app/api/users/${id}`, {
       method: 'DELETE',
     });
 
