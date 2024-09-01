@@ -16,7 +16,7 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('http://localhost:3000/api/users', {
+    const res = await fetch('https://backend024.vercel.app/api/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

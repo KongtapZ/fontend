@@ -54,7 +54,7 @@ export default function Page({ params }) {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('http://localhost:3000/api/users', {
+    const res = await fetch('https://backend024.vercel.app/api/users', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:3000/api/login', { username, password });
+      const response = await axios.post('https://backend024.vercel.app/api/login', { username, password });
 
       if (response.status === 200) {
         // Save token to localStorage
